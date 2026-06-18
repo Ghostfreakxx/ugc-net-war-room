@@ -1448,54 +1448,7 @@ export default function Paper2Page() {
     "Political Economy → Relationship between politics and economics",
   ],
 },
-{
-  title: "Research Methodology Quick Recognition",
-  items: [
-    "One village studied deeply → Case Study",
-    "One time data collection → Cross Sectional",
-    "Repeated data collection → Longitudinal",
-    "Researcher solves local problem → Action Research",
-    "Small test before main study → Pilot Study",
-    "Questionnaire sent to many people → Survey Research",
-    "Numbers and statistics → Quantitative",
-    "Interviews and observations → Qualitative",
-    "Mix of both → Mixed Methods",
-    "Cause variable → Independent Variable",
-    "Effect variable → Dependent Variable",
-  ],
-},
-{
-  title: "Exam Hall Panic Sheet",
-  items: [
-    "Cannot solve in 60 seconds? Mark and move.",
-    "Easy question first, ego later.",
-    "One mark = one mark whether easy or difficult.",
-    "Do not fight a question.",
-    "Eliminate options before solving.",
-    "Read all statements carefully.",
-    "Check for chronology traps.",
-    "Check for article number traps.",
-    "Check for thinker-concept traps.",
-    "Return to difficult questions later.",
-    "Paper 1 gains are easier than Paper 2 gains.",
-  ],
-},
-{
-  title: "Exam Hall Panic Sheet",
-  items: [
-    "Cannot solve in 60 seconds? Mark and move.",
-    "Easy question first, ego later.",
-    "One mark = one mark whether easy or difficult.",
-    "Do not fight a question.",
-    "Eliminate options before solving.",
-    "Read all statements carefully.",
-    "Check for chronology traps.",
-    "Check for article number traps.",
-    "Check for thinker-concept traps.",
-    "Return to difficult questions later.",
-    "Paper 1 gains are easier than Paper 2 gains.",
-  ],
-},
+
 ];
  return (
     <main className="min-h-screen bg-slate-950 text-white p-6">
