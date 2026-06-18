@@ -39,7 +39,30 @@ export default function Paper1Page() {
             "Noise is any barrier that disturbs communication.",
           ]}
         />
-
+<Section
+  title="Higher Education Chronology War Room"
+  items={[
+    "1813 → Charter Act",
+    "1835 → Macaulay's Minute",
+    "1854 → Wood's Dispatch",
+    "1857 → Universities of Calcutta, Bombay and Madras",
+    "1882 → Hunter Commission",
+    "1902 → Universities Commission",
+    "1904 → Indian Universities Act",
+    "1917 → Sadler Commission",
+    "1929 → Hartog Committee",
+    "1948 → Radhakrishnan Commission",
+    "1952-53 → Mudaliar Commission",
+    "1953 → UGC Established",
+    "1956 → UGC Act",
+    "1961 → NCERT",
+    "1964-66 → Kothari Commission",
+    "1968 → National Education Policy",
+    "1976 → Education moved to Concurrent List",
+    "1986 → National Policy on Education",
+    "2020 → National Education Policy 2020",
+  ]}
+/>
         <Section
           title="ICT"
           items={[
@@ -50,7 +73,21 @@ export default function Paper1Page() {
             "Cyber security means protecting digital systems, data, and users from attacks.",
           ]}
         />
-
+<Section
+  title="Constitutional Bodies Quick Revision"
+  items={[
+    "UPSC → Constitutional Body",
+    "State Public Service Commission → Constitutional Body",
+    "Election Commission → Constitutional Body",
+    "Finance Commission → Constitutional Body",
+    "Attorney General of India → Constitutional Body",
+    "Advocate General of State → Constitutional Body",
+    "CAG → Constitutional Body",
+    "NITI Aayog → Non-Constitutional Body",
+    "CBI → Non-Constitutional Body",
+    "NHRC → Statutory Body",
+  ]}
+/>
         <Section
           title="Higher Education"
           items={[
