@@ -367,10 +367,10 @@ export default function Home() {
         <section className="flex-1 p-5 md:p-10 overflow-hidden">
           <div className="mb-8">
             <h2 className="text-3xl md:text-4xl font-bold">
-              Welcome, Ghost 👋
+             Welcome to the UGC NET Political Science War Room
             </h2>
             <p className="text-slate-400 mt-2">
-              Your personal UGC NET Political Science preparation hub.
+              UGC NET Political Science Seig HEil
             </p>
           </div>
 
