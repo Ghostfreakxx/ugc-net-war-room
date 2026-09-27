@@ -388,6 +388,14 @@ export default function Home() {
   <h3 className="text-xl font-bold">JRF Jan 2027</h3>
   <p className="text-slate-400 mt-1">Review + predictions</p>
 </a>
+<a
+  href="/question-lab"
+  className="rounded-2xl border border-fuchsia-500/60 bg-slate-900/70 p-5 flex flex-col justify-center hover:border-fuchsia-400 transition"
+>
+  <div className="text-4xl mb-4">🔬</div>
+  <h3 className="text-xl font-bold">Question Lab</h3>
+  <p className="text-slate-400 mt-1">How NTA sets Paper 2</p>
+</a>
             <Card title="Memory Bank" value="Active" icon="🧠" />
             
           <a

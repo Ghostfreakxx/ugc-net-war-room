@@ -292,6 +292,13 @@ export default function Jrf2027Page() {
       <Section title="🧠 Likely Paper 1 areas" items={paper1Predictions} />
 
       <h2 className="text-3xl font-bold mt-10 mb-4">Predicted-Style Practice Questions</h2>
+      <p className="text-slate-400 mb-2">
+        To learn how to crack each format, see the{" "}
+        <Link href="/question-lab" className="text-purple-300 hover:underline">
+          Question Lab
+        </Link>
+        .
+      </p>
       <p className="text-slate-400 mb-5">
         Try each one, then open the answer.
       </p>
