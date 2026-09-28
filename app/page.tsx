@@ -396,6 +396,14 @@ export default function Home() {
   <h3 className="text-xl font-bold">Question Lab</h3>
   <p className="text-slate-400 mt-1">How NTA sets Paper 2</p>
 </a>
+<a
+  href="/daily"
+  className="rounded-2xl border border-green-500/60 bg-slate-900/70 p-5 flex flex-col justify-center hover:border-green-400 transition"
+>
+  <div className="text-4xl mb-4">✅</div>
+  <h3 className="text-xl font-bold">Daily MCQ</h3>
+  <p className="text-slate-400 mt-1">10 questions a day</p>
+</a>
             <Card title="Memory Bank" value="Active" icon="🧠" />
             
           <a

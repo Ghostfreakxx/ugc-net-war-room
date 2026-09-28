@@ -248,7 +248,7 @@ const studyPlan = [
   "Weeks 9–11 (early Dec): Take 2 full mocks a week under timed conditions. Analysis takes longer than the mock, so give it 2 hours each time.",
   "Weeks 12–13: Current affairs sweep for Jan–Dec 2026: amendments, SC judgements, summits, reports, appointments.",
   "Final week: Use only the 30 Second Revision Sheet, One Question One Trigger, and the practice questions on this page. Learn nothing new.",
-  "Daily non-negotiable: 20 Paper 1 questions (reasoning + DI) because this is where marks are cheapest.",
+  "Daily non-negotiable: the 10-question Daily MCQ set on this site, plus 10 extra Paper 1 questions (reasoning + DI), because Paper 1 is where marks are cheapest.",
 ];
 
 export default function Jrf2027Page() {
