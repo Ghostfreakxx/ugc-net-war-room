@@ -16,7 +16,7 @@ type PracticeQuestion = {
 };
 
 const targetPlan = [
-  "Target cycle: UGC NET December 2026. NTA usually holds it in late December or early January. Confirm dates on ugcnet.nta.ac.in.",
+  "Target cycle: UGC NET December 2026. Exam window 14–19 December 2026 (CBT), with 20–21 December as buffer days. Applications close 28 October 2026. Your subject's exact date comes on the NTA city slip.",
   "Pattern: Paper 1 has 50 questions (100 marks) and Paper 2 has 100 questions (200 marks). There is no negative marking.",
   "Personal JRF target: about 210/300 (70%). That means 38+ in Paper 1 and 67+ in Paper 2.",
   "Check the official Political Science JRF cut-off for your category from the last 2 cycles, and keep a 5–8 mark buffer above it.",
@@ -243,12 +243,12 @@ const practiceQuestions: PracticeQuestion[] = [
 ];
 
 const studyPlan = [
-  "Weeks 1–4 (Oct): Fill the gaps listed above. Take one weak unit per week: Foreign Policy → Political Processes → Governance → Comparative. Turn every new fact into a one-liner on this site.",
-  "Weeks 5–8 (Nov): Solve the last 10+ PYQ papers unit-wise, not paper-wise. Log every wrong answer into Trap Notes with the reason you got it wrong.",
-  "Weeks 9–11 (early Dec): Take 2 full mocks a week under timed conditions. Analysis takes longer than the mock, so give it 2 hours each time.",
-  "Weeks 12–13: Current affairs sweep for Jan–Dec 2026: amendments, SC judgements, summits, reports, appointments.",
-  "Final week: Use only the 30 Second Revision Sheet, One Question One Trigger, and the practice questions on this page. Learn nothing new.",
-  "Daily non-negotiable: the 10-question Daily MCQ set on this site, plus 10 extra Paper 1 questions (reasoning + DI), because Paper 1 is where marks are cheapest.",
+  "Now → 28 Oct: Submit the NTA application first. Then fill gaps, one weak unit every 3–4 days: Foreign Policy → Political Processes → Governance → Comparative.",
+  "Nov weeks 1–2: Solve the last 8–10 PYQ papers unit-wise. Log every wrong answer into Trap Notes with the reason you got it wrong.",
+  "Nov week 3 → Dec 7: Take 2–3 full timed mocks a week. Give each one about 2 hours of analysis.",
+  "Late Nov: Current affairs sweep for 2026: amendments and bills, SC judgements, summits, appointments.",
+  "Dec 8 → exam: Use only the 30 Second Revision Sheet, One Question One Trigger, your Mistake Bank and the practice questions on this page. Learn nothing new.",
+  "Daily non-negotiable: the Daily MCQ page on this site at 25 questions a day (50 on weekends), plus 10 extra Paper 1 questions (reasoning + DI), because Paper 1 is where marks are cheapest.",
 ];
 
 export default function Jrf2027Page() {
@@ -260,8 +260,8 @@ export default function Jrf2027Page() {
 
       <h1 className="text-4xl font-bold mt-4 mb-2">JRF Mission: December 2026 Cycle</h1>
       <p className="text-slate-400 mb-3 max-w-3xl">
-        A review of every note on this site, plus predictions for the exam expected
-        around January 2027.
+        A review of every note on this site, plus predictions for the exam on
+        14–19 December 2026.
       </p>
       <p className="text-sm text-amber-300/90 mb-8 max-w-3xl">
         Predictions are educated guesses based on PYQ patterns and events up to 2026.
@@ -271,7 +271,7 @@ export default function Jrf2027Page() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <Section title="🎯 Target and Score Plan" items={targetPlan} />
-        <Section title="🗓️ 14-Week Plan to January" items={studyPlan} />
+        <Section title="🗓️ Plan to 14 December" items={studyPlan} />
       </div>
 
       <h2 className="text-3xl font-bold mt-10 mb-4">Review of Your Notes</h2>

@@ -304,7 +304,7 @@ export default function Home() {
   ];
 
   const predictionNotes = [
-    "Dec 2026 cycle (exam ~Jan 2027) will likely keep the statement-based, match-list and chronology formats. Direct one-line memory questions keep shrinking.",
+    "Dec 2026 cycle (exam 14–19 Dec 2026) will likely keep the statement-based, match-list and chronology formats. Direct one-line memory questions keep shrinking.",
     "Political Theory and Indian Government will remain high-value areas.",
     "International Relations may include current global issues with theory-based framing.",
     "Research Methodology can appear indirectly through political analysis questions.",
@@ -385,7 +385,7 @@ export default function Home() {
   className="rounded-2xl border border-fuchsia-500/60 bg-slate-900/70 p-5 flex flex-col justify-center hover:border-fuchsia-400 transition"
 >
   <div className="text-4xl mb-4">🎯</div>
-  <h3 className="text-xl font-bold">JRF Jan 2027</h3>
+  <h3 className="text-xl font-bold">JRF Dec 2026</h3>
   <p className="text-slate-400 mt-1">Review + predictions</p>
 </a>
 <a

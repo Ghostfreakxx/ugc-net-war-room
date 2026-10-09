@@ -2,10 +2,22 @@
 
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
+import { morePaper1, morePaper2 } from "./bank-more";
 import { paper1Bank, paper2Bank, type MCQ } from "./questions";
 
-const PAPER2_PER_DAY = 7;
-const PAPER1_PER_DAY = 3;
+const PAPER2 = [...paper2Bank, ...morePaper2];
+const PAPER1 = [...paper1Bank, ...morePaper1];
+const ALL_QUESTIONS = [...PAPER2, ...PAPER1];
+
+// Daily set sizes, split roughly 70:30 between Paper 2 and Paper 1.
+const SET_SIZES = {
+  10: { paper2: 7, paper1: 3 },
+  25: { paper2: 18, paper1: 7 },
+  50: { paper2: 35, paper1: 15 },
+} as const;
+type SetSize = keyof typeof SET_SIZES;
+
+const EXAM_START = "2026-12-14";
 const KEY_PREFIX = "dmcq:v1:";
 
 // ---------- storage (localStorage with in-memory fallback) ----------
@@ -116,7 +128,11 @@ type DayAnswers = Record<string, number>;
 export default function DailyMcqPage() {
   const today = useSyncExternalStore(subscribe, todayKey, () => null);
   const mode = parse<Mode>(useStoredValue(`${KEY_PREFIX}mode`), "all");
-  const rawAnswers = useStoredValue(`${KEY_PREFIX}${today}:${mode}`);
+  const storedSize = parse<number>(useStoredValue(`${KEY_PREFIX}size`), 10);
+  const size: SetSize = storedSize in SET_SIZES ? (storedSize as SetSize) : 10;
+  // Size 10 keeps the original key so earlier answers still show.
+  const answersKey = `${KEY_PREFIX}${today}:${mode}${size === 10 ? "" : `:${size}`}`;
+  const rawAnswers = useStoredValue(answersKey);
   const doneDays = parse<string[]>(useStoredValue(`${KEY_PREFIX}done`), []);
   const mistakes = parse<string[]>(useStoredValue(`${KEY_PREFIX}mistakes`), []);
 
@@ -132,12 +148,12 @@ export default function DailyMcqPage() {
   const answers = parse<DayAnswers>(rawAnswers, {});
 
   const pastPaper = (q: MCQ) => q.source !== undefined;
-  const p2Pool = mode === "pyq" ? paper2Bank.filter(pastPaper) : paper2Bank;
-  const p1Pool = mode === "pyq" ? paper1Bank.filter(pastPaper) : paper1Bank;
+  const split = SET_SIZES[size];
   const todaysSet =
     mode === "pyq"
-      ? rotate([...p2Pool, ...p1Pool], PAPER2_PER_DAY + PAPER1_PER_DAY, day, 7)
-      : [...rotate(p2Pool, PAPER2_PER_DAY, day, 2), ...rotate(p1Pool, PAPER1_PER_DAY, day, 1)];
+      ? rotate(ALL_QUESTIONS.filter(pastPaper), size, day, 7)
+      : [...rotate(PAPER2, split.paper2, day, 2), ...rotate(PAPER1, split.paper1, day, 1)];
+  const daysToExam = dayNumber(EXAM_START) - day;
 
   const answeredCount = todaysSet.filter((q) => answers[q.id] !== undefined).length;
   const correctCount = todaysSet.filter((q) => {
@@ -147,7 +163,7 @@ export default function DailyMcqPage() {
   const finished = answeredCount === todaysSet.length;
 
   const streak = countStreak(doneDays, today);
-  const allQuestions = [...paper2Bank, ...paper1Bank];
+  const allQuestions = ALL_QUESTIONS;
   const mistakeQuestions = mistakes
     .map((id) => allQuestions.find((q) => q.id === id))
     .filter((q): q is MCQ => q !== undefined);
@@ -155,7 +171,7 @@ export default function DailyMcqPage() {
   function pick(question: MCQ, optionIndex: number) {
     if (!today || answers[question.id] !== undefined) return;
     const next = { ...answers, [question.id]: optionIndex };
-    writeKey(`${KEY_PREFIX}${today}:${mode}`, JSON.stringify(next));
+    writeKey(answersKey, JSON.stringify(next));
 
     const correct = displayOptions(question, day)[optionIndex].correct;
     const nextMistakes = correct
@@ -172,6 +188,10 @@ export default function DailyMcqPage() {
     writeKey(`${KEY_PREFIX}mode`, JSON.stringify(next));
   }
 
+  function setSize(next: SetSize) {
+    writeKey(`${KEY_PREFIX}size`, JSON.stringify(next));
+  }
+
   const pyqCount = allQuestions.filter(pastPaper).length;
 
   return (
@@ -181,17 +201,39 @@ export default function DailyMcqPage() {
       </Link>
 
       <h1 className="text-4xl font-bold mt-4 mb-2">Daily MCQ</h1>
-      <p className="text-slate-400 mb-6 max-w-3xl">
-        10 new questions every day ({PAPER2_PER_DAY} Paper 2 + {PAPER1_PER_DAY} Paper 1). The set
-        rotates through the whole bank before repeating, and options are shuffled
-        daily so you learn the fact, not the position.
+      <p className="text-slate-400 mb-4 max-w-3xl">
+        A new set every day, roughly 70% Paper 2 and 30% Paper 1. The set rotates through
+        the whole bank before repeating, and options are shuffled daily so you learn the
+        fact, not the position.
       </p>
+
+      {daysToExam >= 0 && (
+        <div className="rounded-2xl border border-fuchsia-500/40 bg-fuchsia-500/10 p-4 mb-6 max-w-3xl">
+          <p className="text-fuchsia-200 font-semibold">
+            {daysToExam === 0 ? "Exam window starts today" : `${daysToExam} days to the exam window`} (14–19
+            December 2026)
+          </p>
+          <p className="text-sm text-slate-300 mt-1">
+            Applications close 28 October 2026. Check your subject&apos;s exact date on the NTA
+            city slip.
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Stat label="Today" value={`${correctCount} / ${todaysSet.length}`} />
         <Stat label="Answered" value={`${answeredCount} / ${todaysSet.length}`} />
         <Stat label="Streak" value={`${streak} day${streak === 1 ? "" : "s"}`} />
         <Stat label="Mistake bank" value={`${mistakeQuestions.length}`} />
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3 mb-3">
+        <span className="text-sm text-slate-400 mr-1">Questions per day:</span>
+        {([10, 25, 50] as SetSize[]).map((option) => (
+          <ModeButton key={option} active={size === option} onClick={() => setSize(option)}>
+            {option}
+          </ModeButton>
+        ))}
       </div>
 
       <div className="flex flex-wrap gap-3 mb-8">
