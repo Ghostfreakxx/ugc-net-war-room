@@ -304,7 +304,7 @@ export default function Home() {
   ];
 
   const predictionNotes = [
-    "June 2026 may ask more statement-based questions instead of direct memory questions.",
+    "Dec 2026 cycle (exam 14–19 Dec 2026) will likely keep the statement-based, match-list and chronology formats. Direct one-line memory questions keep shrinking.",
     "Political Theory and Indian Government will remain high-value areas.",
     "International Relations may include current global issues with theory-based framing.",
     "Research Methodology can appear indirectly through political analysis questions.",
@@ -316,6 +316,8 @@ export default function Home() {
     "Paper 2 may continue mixing traditional Political Science with current governance issues.",
     "Do not depend only on coaching mocks. PYQs must be converted into memory notes and trap notes.",
     "Your safest strategy is concept clarity plus elimination method, not blind memorization.",
+    "Constitutional changes since 2024 are prime statement-question material: One Nation One Election (129th Bill), 130th Amendment Bill, Governor's assent, delimitation after Census 2027.",
+    "India's Foreign Policy is your thinnest unit in these notes. Operation Sindoor, the Indus Waters Treaty, BRICS 2026 and MAHASAGAR are likely hooks.",
   ];
 
   const units = ["All", ...Array.from(new Set(pyqNotes.map((note) => note.unit)))];
@@ -378,7 +380,30 @@ export default function Home() {
             <Card title="PYQ Notes" value={`${pyqNotes.length} notes`} icon="📄" />
             <Card title="Topic Notes" value={`${topicNotes.length} notes`} icon="📚" />
             <Card title="Trap Notes" value={`${trapNotes.length} traps`} icon="⚠️" />
-            <Card title="Predictions" value="June 2026" icon="🎯" />
+            <a
+  href="/jrf-2027"
+  className="rounded-2xl border border-fuchsia-500/60 bg-slate-900/70 p-5 flex flex-col justify-center hover:border-fuchsia-400 transition"
+>
+  <div className="text-4xl mb-4">🎯</div>
+  <h3 className="text-xl font-bold">JRF Dec 2026</h3>
+  <p className="text-slate-400 mt-1">Review + predictions</p>
+</a>
+<a
+  href="/question-lab"
+  className="rounded-2xl border border-fuchsia-500/60 bg-slate-900/70 p-5 flex flex-col justify-center hover:border-fuchsia-400 transition"
+>
+  <div className="text-4xl mb-4">🔬</div>
+  <h3 className="text-xl font-bold">Question Lab</h3>
+  <p className="text-slate-400 mt-1">How NTA sets Paper 2</p>
+</a>
+<a
+  href="/daily"
+  className="rounded-2xl border border-green-500/60 bg-slate-900/70 p-5 flex flex-col justify-center hover:border-green-400 transition"
+>
+  <div className="text-4xl mb-4">✅</div>
+  <h3 className="text-xl font-bold">Daily MCQ</h3>
+  <p className="text-slate-400 mt-1">10 questions a day</p>
+</a>
             <Card title="Memory Bank" value="Active" icon="🧠" />
             
           <a
@@ -427,7 +452,7 @@ export default function Home() {
                 />
               </Panel>
 
-              <Panel title="June 2026 Focus">
+              <Panel title="Dec 2026 Cycle Focus">
                 <NumberList items={predictionNotes.slice(0, 8)} />
               </Panel>
             </div>
