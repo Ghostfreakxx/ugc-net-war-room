@@ -1,5 +1,5 @@
 // UGC NET War Room service worker: makes the app installable and usable offline.
-const CACHE = "war-room-v2";
+const CACHE = "war-room-v3";
 const PRECACHE = ["/", "/daily", "/paper1", "/paper2", "/chronology", "/question-lab", "/jrf-2027"];
 
 self.addEventListener("install", (event) => {

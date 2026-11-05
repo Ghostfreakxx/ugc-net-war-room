@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
+import TodayBanner from "./daily/today-banner";
 
 type PYQNote = {
   year: string;
@@ -375,6 +376,8 @@ export default function Home() {
               Daily revision for the December 2026 cycle
             </p>
           </div>
+
+          <TodayBanner />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 mb-8">
             <Card title="PYQ Notes" value={`${pyqNotes.length} notes`} icon="📄" />
