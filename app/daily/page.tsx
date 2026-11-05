@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 import { morePaper1, morePaper2 } from "./bank-more";
 import { paper1Bank, paper2Bank, type MCQ } from "./questions";
+import { paper1Pyq } from "./bank-p1-pyq";
+import { officialJune2025 } from "./bank-official-2025";
 import {
   KEY_PREFIX,
   countStreak,
@@ -18,15 +20,19 @@ import {
   type MistakeLog,
 } from "./progress";
 
-const PAPER2 = [...paper2Bank, ...morePaper2];
-const PAPER1 = [...paper1Bank, ...morePaper1];
+const OFFICIAL_P1 = officialJune2025.filter((q) => q.paper === 1);
+const OFFICIAL_P2 = officialJune2025.filter((q) => q.paper === 2);
+const PAPER2 = [...paper2Bank, ...morePaper2, ...OFFICIAL_P2];
+const PAPER1 = [...paper1Bank, ...morePaper1, ...paper1Pyq, ...OFFICIAL_P1];
+// Paper 1 without the arithmetic unit, for focused practice of the theory units.
+const PAPER1_NO_MATHS = PAPER1.filter((q) => q.unit !== "Mathematical Reasoning");
 const ALL_QUESTIONS = [...PAPER2, ...PAPER1];
 
-// Daily set sizes, split roughly 70:30 between Paper 2 and Paper 1.
+// Daily set sizes, split 60:40 between Paper 2 and Paper 1.
 const SET_SIZES = {
-  10: { paper2: 7, paper1: 3 },
-  25: { paper2: 18, paper1: 7 },
-  50: { paper2: 35, paper1: 15 },
+  10: { paper2: 6, paper1: 4 },
+  25: { paper2: 15, paper1: 10 },
+  50: { paper2: 30, paper1: 20 },
 } as const;
 type SetSize = keyof typeof SET_SIZES;
 
@@ -84,7 +90,7 @@ function displayOptions(question: MCQ, day: number): DisplayOption[] {
 
 // ---------- page ----------
 
-type Mode = "all" | "pyq";
+type Mode = "all" | "pyq" | "p1";
 type DayAnswers = Record<string, number>;
 
 export default function DailyMcqPage() {
@@ -115,7 +121,9 @@ export default function DailyMcqPage() {
   const todaysSet =
     mode === "pyq"
       ? rotate(ALL_QUESTIONS.filter(pastPaper), size, day, 7)
-      : [...rotate(PAPER2, split.paper2, day, 2), ...rotate(PAPER1, split.paper1, day, 1)];
+      : mode === "p1"
+        ? rotate(PAPER1_NO_MATHS, size, day, 11)
+        : [...rotate(PAPER2, split.paper2, day, 2), ...rotate(PAPER1, split.paper1, day, 1)];
   const daysToExam = dayNumber(EXAM_START) - day;
 
   const answeredCount = todaysSet.filter((q) => answers[q.id] !== undefined).length;
@@ -168,7 +176,7 @@ export default function DailyMcqPage() {
 
       <h1 className="text-4xl font-bold mt-4 mb-2">Daily MCQ</h1>
       <p className="text-slate-400 mb-4 max-w-3xl">
-        A new set every day, roughly 70% Paper 2 and 30% Paper 1. The set rotates through
+        A new set every day, 60% Paper 2 and 40% Paper 1. The set rotates through
         the whole bank before repeating, and options are shuffled daily so you learn the
         fact, not the position.
       </p>
@@ -237,6 +245,9 @@ export default function DailyMcqPage() {
         </ModeButton>
         <ModeButton active={mode === "pyq"} onClick={() => setMode("pyq")}>
           Past-paper only ({pyqCount})
+        </ModeButton>
+        <ModeButton active={mode === "p1"} onClick={() => setMode("p1")}>
+          Paper 1, no maths ({PAPER1_NO_MATHS.length})
         </ModeButton>
       </div>
 
@@ -455,7 +466,7 @@ function QuestionCard({
         <SourceBadge question={question} />
       </div>
 
-      <p className="text-slate-100 leading-relaxed mb-4">{question.question}</p>
+      <p className="text-slate-100 leading-relaxed mb-4 whitespace-pre-line">{question.question}</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {options.map((option, index) => {
