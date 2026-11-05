@@ -372,7 +372,7 @@ export default function Home() {
              Welcome to the UGC NET Political Science War Room
             </h2>
             <p className="text-slate-400 mt-2">
-              UGC NET Political Science Seig HEil
+              Daily revision for the December 2026 cycle
             </p>
           </div>
 
