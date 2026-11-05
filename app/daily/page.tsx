@@ -1,9 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { morePaper1, morePaper2 } from "./bank-more";
 import { paper1Bank, paper2Bank, type MCQ } from "./questions";
+import {
+  KEY_PREFIX,
+  countStreak,
+  readKey,
+  lastNDays,
+  longestStreak,
+  parse,
+  subscribe,
+  todayKey,
+  useStoredValue,
+  writeKey,
+  type MistakeLog,
+} from "./progress";
 
 const PAPER2 = [...paper2Bank, ...morePaper2];
 const PAPER1 = [...paper1Bank, ...morePaper1];
@@ -18,59 +31,8 @@ const SET_SIZES = {
 type SetSize = keyof typeof SET_SIZES;
 
 const EXAM_START = "2026-12-14";
-const KEY_PREFIX = "dmcq:v1:";
-
-// ---------- storage (localStorage with in-memory fallback) ----------
-
-const memory = new Map<string, string>();
-const listeners = new Set<() => void>();
-
-function readKey(key: string): string | null {
-  if (memory.has(key)) return memory.get(key) ?? null;
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function writeKey(key: string, value: string) {
-  memory.set(key, value);
-  try {
-    window.localStorage.setItem(key, value);
-  } catch {
-    // Storage unavailable: the in-memory copy keeps this session working.
-  }
-  listeners.forEach((listener) => listener());
-}
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-function useStoredValue(key: string): string | null {
-  return useSyncExternalStore(
-    subscribe,
-    () => readKey(key),
-    () => null,
-  );
-}
-
-function parse<T>(raw: string | null, fallback: T): T {
-  if (!raw) return fallback;
-  try {
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
-  }
-}
 
 // ---------- deterministic daily selection ----------
-
-function todayKey() {
-  return new Date().toLocaleDateString("en-CA");
-}
 
 function dayNumber(key: string) {
   return Math.floor(Date.parse(`${key}T00:00:00Z`) / 86_400_000);
@@ -135,6 +97,7 @@ export default function DailyMcqPage() {
   const rawAnswers = useStoredValue(answersKey);
   const doneDays = parse<string[]>(useStoredValue(`${KEY_PREFIX}done`), []);
   const mistakes = parse<string[]>(useStoredValue(`${KEY_PREFIX}mistakes`), []);
+  const mistakeLog = parse<MistakeLog>(useStoredValue(`${KEY_PREFIX}mistakeLog`), {});
 
   if (!today) {
     return (
@@ -163,6 +126,8 @@ export default function DailyMcqPage() {
   const finished = answeredCount === todaysSet.length;
 
   const streak = countStreak(doneDays, today);
+  const best = longestStreak(doneDays);
+  const tracker = lastNDays(today, 14);
   const allQuestions = ALL_QUESTIONS;
   const mistakeQuestions = mistakes
     .map((id) => allQuestions.find((q) => q.id === id))
@@ -178,6 +143,7 @@ export default function DailyMcqPage() {
       ? mistakes.filter((id) => id !== question.id)
       : Array.from(new Set([question.id, ...mistakes]));
     writeKey(`${KEY_PREFIX}mistakes`, JSON.stringify(nextMistakes));
+    if (!correct) recordMiss(question.id, today);
 
     if (Object.keys(next).length === todaysSet.length && !doneDays.includes(today)) {
       writeKey(`${KEY_PREFIX}done`, JSON.stringify([...doneDays, today]));
@@ -223,8 +189,37 @@ export default function DailyMcqPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Stat label="Today" value={`${correctCount} / ${todaysSet.length}`} />
         <Stat label="Answered" value={`${answeredCount} / ${todaysSet.length}`} />
-        <Stat label="Streak" value={`${streak} day${streak === 1 ? "" : "s"}`} />
+        <Stat
+          label={`Streak (best ${best})`}
+          value={`🔥 ${streak} day${streak === 1 ? "" : "s"}`}
+        />
         <Stat label="Mistake bank" value={`${mistakeQuestions.length}`} />
+      </div>
+
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 mb-6">
+        <p className="text-sm text-slate-400 mb-3">
+          Last 14 days{" "}
+          {doneDays.includes(today)
+            ? "· today is done ✅"
+            : "· finish today's set to keep your streak"}
+        </p>
+        <div className="grid grid-cols-7 sm:grid-cols-14 gap-1.5">
+          {tracker.map((d) => {
+            const done = doneDays.includes(d);
+            const isToday = d === today;
+            return (
+              <div
+                key={d}
+                title={d}
+                className={`aspect-square rounded-md flex items-center justify-center text-xs ${
+                  done ? "bg-green-500/80 text-slate-950 font-bold" : "bg-slate-800 text-slate-500"
+                } ${isToday ? "ring-2 ring-fuchsia-400" : ""}`}
+              >
+                {Number(d.slice(8))}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3 mb-3">
@@ -270,21 +265,21 @@ export default function DailyMcqPage() {
       </div>
 
       {mistakeQuestions.length > 0 && (
-        <section className="mt-12">
-          <h2 className="text-3xl font-bold mb-2">Mistake Bank</h2>
-          <p className="text-slate-400 mb-4">
-            Questions you got wrong. A question leaves the bank when you get it right on a later day.
-          </p>
-          <div className="space-y-3">
-            {mistakeQuestions.map((q) => (
-              <details key={q.id} className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
-                <summary className="cursor-pointer text-slate-200">{q.question}</summary>
-                <p className="mt-2 text-green-300 font-semibold">Answer: {q.options[q.answer]}</p>
-                <p className="mt-1 text-slate-300">{q.explain}</p>
-              </details>
-            ))}
-          </div>
-        </section>
+        <MistakeBank
+          questions={mistakeQuestions}
+          log={mistakeLog}
+          day={day}
+          onResult={(question, correct) => {
+            if (correct) {
+              writeKey(
+                `${KEY_PREFIX}mistakes`,
+                JSON.stringify(mistakes.filter((id) => id !== question.id)),
+              );
+            } else {
+              recordMiss(question.id, today);
+            }
+          }}
+        />
       )}
 
       <p className="mt-12 text-sm text-slate-500 max-w-3xl">
@@ -299,16 +294,90 @@ export default function DailyMcqPage() {
   );
 }
 
-function countStreak(doneDays: string[], today: string) {
-  const done = new Set(doneDays);
-  const cursor = new Date(`${today}T00:00:00Z`);
-  if (!done.has(today)) cursor.setUTCDate(cursor.getUTCDate() - 1);
-  let streak = 0;
-  while (done.has(cursor.toISOString().slice(0, 10))) {
-    streak++;
-    cursor.setUTCDate(cursor.getUTCDate() - 1);
-  }
-  return streak;
+function recordMiss(id: string, today: string) {
+  const key = `${KEY_PREFIX}mistakeLog`;
+  const log = parse<MistakeLog>(readKey(key), {});
+  const entry = log[id] ?? { wrong: 0, last: today };
+  writeKey(key, JSON.stringify({ ...log, [id]: { wrong: entry.wrong + 1, last: today } }));
+}
+
+function MistakeBank({
+  questions,
+  log,
+  day,
+  onResult,
+}: {
+  questions: MCQ[];
+  log: MistakeLog;
+  day: number;
+  onResult: (question: MCQ, correct: boolean) => void;
+}) {
+  const [unit, setUnit] = useState("All");
+  // Answers given in this retry session: question id -> picked option index.
+  const [retry, setRetry] = useState<Record<string, number>>({});
+  const [cleared, setCleared] = useState<MCQ[]>([]);
+
+  const unitCounts = new Map<string, number>();
+  questions.forEach((q) => unitCounts.set(q.unit, (unitCounts.get(q.unit) ?? 0) + 1));
+  const weakUnits = [...unitCounts.entries()].sort((a, b) => b[1] - a[1]);
+
+  // Questions just answered right stay visible (with feedback) until the page reloads.
+  const visible = [...questions, ...cleared.filter((c) => !questions.some((q) => q.id === c.id))]
+    .filter((q) => unit === "All" || q.unit === unit)
+    .sort((a, b) => (log[b.id]?.wrong ?? 1) - (log[a.id]?.wrong ?? 1));
+
+  return (
+    <section className="mt-12">
+      <h2 className="text-3xl font-bold mb-2">Mistake Log</h2>
+      <p className="text-slate-400 mb-4 max-w-3xl">
+        Every question you got wrong, most-missed first. Retry it here: get it right and it leaves
+        the log; get it wrong again and its miss count goes up.
+      </p>
+
+      <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-4 mb-4">
+        <p className="text-sm text-red-200 font-semibold mb-2">Weakest units</p>
+        <div className="flex flex-wrap gap-2">
+          <ModeButton active={unit === "All"} onClick={() => setUnit("All")}>
+            All ({questions.length})
+          </ModeButton>
+          {weakUnits.map(([name, count]) => (
+            <ModeButton key={name} active={unit === name} onClick={() => setUnit(name)}>
+              {name} ({count})
+            </ModeButton>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        {visible.map((q) => {
+          const options = displayOptions(q, day + 1);
+          const picked = retry[q.id];
+          const misses = log[q.id]?.wrong;
+          return (
+            <div key={q.id}>
+              <p className="text-xs text-red-300 mb-1">
+                {misses ? `Missed ${misses}×` : "Missed"}
+                {log[q.id]?.last ? ` · last on ${log[q.id].last}` : ""}
+              </p>
+              <QuestionCard
+                number={0}
+                question={q}
+                options={options}
+                picked={picked}
+                onPick={(optionIndex) => {
+                  if (picked !== undefined) return;
+                  const correct = options[optionIndex].correct;
+                  setRetry((r) => ({ ...r, [q.id]: optionIndex }));
+                  if (correct) setCleared((c) => [...c, q]);
+                  onResult(q, correct);
+                }}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
@@ -381,7 +450,7 @@ function QuestionCard({
     <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <span className="text-xs uppercase tracking-wide text-purple-300 font-semibold">
-          Q{number} • Paper {question.paper} • {question.unit} • {question.format}
+          {number > 0 ? `Q${number} • ` : ""}Paper {question.paper} • {question.unit} • {question.format}
         </span>
         <SourceBadge question={question} />
       </div>
